@@ -108,7 +108,7 @@ public class Main extends PApplet {
         	if(!automata1.getMoviendoEstado()) {
         		automata1.setEstadoMoviendoID(automata1.getEstadoClickeado());
         	}
-        	if(automata1.getEstadoClickeado() >= 0) {
+        	if(automata1.getEstadoMoviendoID() >= 0) {
         		automata1.setMoviendoEstado(true);
         		automata1.listaEstados.get(automata1.getEstadoMoviendoID()).setX(mouseX);
         		automata1.listaEstados.get(automata1.getEstadoMoviendoID()).setY(mouseY);
@@ -119,6 +119,7 @@ public class Main extends PApplet {
     public void mouseReleased() {
     	if(automata1.getMoviendoEstado()) {
     		automata1.setMoviendoEstado(false);
+    		automata1.setEstadoMoviendoID(-1);
     	}
     }
     

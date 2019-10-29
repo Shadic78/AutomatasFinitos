@@ -6,7 +6,7 @@ import processing.core.PApplet;
 
 public class AutomataFinito {
 	public ArrayList<Estado> listaEstados = new ArrayList<Estado>();
-	public ArrayList<Conexion> listaConexiones = new ArrayList<Conexion>();
+	public ArrayList<ConexionCurva> listaConexiones = new ArrayList<ConexionCurva>();
 	private PApplet parent;
 	private boolean moviendoEstado;
 	private int estadoMoviendoID;
@@ -75,7 +75,7 @@ public class AutomataFinito {
 		}
 		else {
 			matrizDeCondiciones[estado1][estado2] = condicion;
-			listaConexiones.add(new Conexion(parent, listaEstados.get(estado1), listaEstados.get(estado2), condicion));
+			listaConexiones.add(new ConexionCurva(parent, listaEstados.get(estado1), listaEstados.get(estado2), condicion));
 		}
 	}
 	
