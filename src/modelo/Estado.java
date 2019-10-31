@@ -11,7 +11,7 @@ public class Estado {
 	
 	public Estado(PApplet p, int x, int y, String nombre) {
 		parent = p;
-		this.radio = 40;
+		this.radio = 20;
 		this.x = x;
 		this.y = y;
 		this.nombre = nombre;
@@ -53,7 +53,7 @@ public class Estado {
 		parent.fill(81, 237, 236);
 		parent.strokeWeight(5);
 		parent.stroke(70, 206, 205);
-		parent.ellipse(this.x, this.y, this.radio, this.radio);
+		parent.ellipse(this.x, this.y, this.radio*2, this.radio*2);
 		parent.fill(0);
 		parent.text(nombre, this.x, this.y);
 	}
