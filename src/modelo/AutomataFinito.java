@@ -8,14 +8,10 @@ public class AutomataFinito {
 	public ArrayList<Estado> listaEstados = new ArrayList<Estado>();
 	public ArrayList<ConexionCurva> listaConexiones = new ArrayList<ConexionCurva>();
 	private PApplet parent;
-	private boolean moviendoEstado;
-	private int estadoMoviendoID;
 	private String[][] matrizDeCondiciones;
 	
 	public AutomataFinito(PApplet p) {
 		parent = p;
-		moviendoEstado = false;
-		estadoMoviendoID = -1;
 		matrizDeCondiciones = new String[50][50];
 		inicializarMatriz(matrizDeCondiciones, 50, "-");
 	}
@@ -34,22 +30,6 @@ public class AutomataFinito {
 		for(int i = 0; i < listaConexiones.size(); i++) {
 			listaConexiones.get(i).show();
 		}
-	}
-	
-	public void setMoviendoEstado(boolean moviendoEstado) {
-		this.moviendoEstado = moviendoEstado;
-	}
-	
-	public boolean getMoviendoEstado() {
-		return this.moviendoEstado;
-	}
-	
-	public void setEstadoMoviendoID(int id) {
-		this.estadoMoviendoID = id;
-	}
-	
-	public int getEstadoMoviendoID() {
-		return this.estadoMoviendoID;
 	}
 	
 	public int getEstadoClickeado() {

@@ -11,24 +11,8 @@ public class Main extends PApplet {
 	
 	// El objeto que usaremos para crear la interfaz de usuario
 	ControlP5 ventana;
-	boolean AddEstado = false;
-	boolean MoverEstado = false;
 	AutomataFinito automata1;
-	
-	// Variables para almacenar los estados a los que se les dio click
-	int estadoClick1 = -1;
-	int estadoClick2 = -1;
-	
-	/* Variable que controla el estado global del programa
-	 * 0 - Default
-	 * 1 - Agregar estados
-	 * 2 - Mover estados
-	 * 3 - Borrar estados
-	 * 4 - Agregar conexion normal (Al dar click a un estado el estado del programa cambia a 5)
-	 * 5 - (Dar click en el segundo estado)
-	 * 6 - Borrar conexion
-	 */
-	int estadoDelPrograma = 0;	
+	EstadoDelPrograma controladorPrograma;	
 	
     public static void main(String[] args) {
         PApplet.main("controlador.Main");
@@ -47,6 +31,7 @@ public class Main extends PApplet {
     	ventana = ventana1.getControlP5();
     	
     	automata1 = new AutomataFinito(this);
+    	controladorPrograma = new EstadoDelPrograma(this, ventana);
     	
     	textAlign(CENTER, CENTER);
     	textSize(14);
@@ -63,14 +48,14 @@ public class Main extends PApplet {
     	automata1.imprimirEstados();
     	
     	fill(0);
-    	text("Estado del programa: " + estadoDelPrograma, width / 2, height - 80);
+    	text("Estado del programa: " + controladorPrograma.getEstadoDelPrograma(), width / 2, height - 80);
     }
     
     public void mouseClicked() {
     	// Este if es para que no pongan vertices en el area donde estan los botones
     	if(mouseX < width - 150) {
     		// De acuerdo al estado del programa se hace una cosa u otra
-        	switch(estadoDelPrograma) {
+        	switch(controladorPrograma.getEstadoDelPrograma()) {
 	    		case 1: // Agregar vertices
 	    	    	Estado estadoNuevo = new Estado(this, mouseX, mouseY, "VerticeNuevo");
 	    	    	automata1.agregarEstado(estadoNuevo);
@@ -82,19 +67,19 @@ public class Main extends PApplet {
 	    			break;
 	    		case 4: // Primer click para agregar una conexion entre estados
 	    			if(automata1.getEstadoClickeado() >= 0) {
-	    				estadoClick1 = automata1.getEstadoClickeado();
-	    				actualizarEstadoDelPrograma(5);
-	    				println("estado id: " + estadoClick1);
+	    				controladorPrograma.setEstadoClick1(automata1.getEstadoClickeado());
+	    				controladorPrograma.actualizarEstadoDelPrograma(5);
+	    				println("estado id: " + controladorPrograma.getEstadoClick1());
 	    			}
 	    			break;
 	    		case 5: // Segundo click para agregar una conexion entre estados
 	    			if(automata1.getEstadoClickeado() >= 0) {
-	    				estadoClick2 = automata1.getEstadoClickeado();
-	    				automata1.agregarConexion(estadoClick1, estadoClick2, "a");
-	    				println("estado id2: " + estadoClick2);
-	    				estadoClick1 = -1;
-	    				estadoClick2 = -1;
-	    				actualizarEstadoDelPrograma(4);
+	    				controladorPrograma.setEstadoClick2(automata1.getEstadoClickeado());
+	    				automata1.agregarConexion(controladorPrograma.getEstadoClick1(), controladorPrograma.getEstadoClick2(), "a");
+	    				println("estado id2: " + controladorPrograma.getEstadoClick2());
+	    				controladorPrograma.setEstadoClick1(-1);
+	    				controladorPrograma.setEstadoClick2(-1);
+	    				controladorPrograma.actualizarEstadoDelPrograma(4);
 	    			}	    			
 	    			break;
 	    		default:
@@ -104,60 +89,33 @@ public class Main extends PApplet {
     }
     
     public void mouseDragged() {
-    	if(estadoDelPrograma == 2) {
-        	if(!automata1.getMoviendoEstado()) {
-        		automata1.setEstadoMoviendoID(automata1.getEstadoClickeado());
+    	if(controladorPrograma.getEstadoDelPrograma() == 2) {
+        	if(!controladorPrograma.getMoviendoEstado()) {
+        		controladorPrograma.setEstadoMoviendoID(automata1.getEstadoClickeado());
         	}
-        	if(automata1.getEstadoMoviendoID() >= 0) {
-        		automata1.setMoviendoEstado(true);
-        		automata1.listaEstados.get(automata1.getEstadoMoviendoID()).setX(mouseX);
-        		automata1.listaEstados.get(automata1.getEstadoMoviendoID()).setY(mouseY);
+        	if(controladorPrograma.getEstadoMoviendoID() >= 0) {
+        		controladorPrograma.setMoviendoEstado(true);
+        		automata1.listaEstados.get(controladorPrograma.getEstadoMoviendoID()).setX(mouseX);
+        		automata1.listaEstados.get(controladorPrograma.getEstadoMoviendoID()).setY(mouseY);
         	}    		
     	}
     }
     
     public void mouseReleased() {
-    	if(automata1.getMoviendoEstado()) {
-    		automata1.setMoviendoEstado(false);
-    		automata1.setEstadoMoviendoID(-1);
+    	if(controladorPrograma.getMoviendoEstado()) {
+    		controladorPrograma.setMoviendoEstado(false);
+    		controladorPrograma.setEstadoMoviendoID(-1);
     	}
-    }
-    
-    // De acuerdo al estado del programa desactiva los otros botones
-    public void actualizarEstadoDelPrograma(int estado) {
-    	estadoDelPrograma = estado;
-    	// Desactiva el boton que no hayas presionado de acuerdo al estado del programa
-    	switch(estadoDelPrograma) {
-    		case 1:
-        		((Toggle) ventana.getController("MoverEstado")).setState(false);
-        		((Toggle) ventana.getController("AgregarConexion")).setState(false);           		
-        		println("Estado 1");        		
-        		break;
-    		case 2: 
-        		((Toggle) ventana.getController("AddEstado")).setState(false);
-        		((Toggle) ventana.getController("AgregarConexion")).setState(false);           		
-        		println("Estado 2");        		
-        		break;
-    		case 3:
-    			break;
-    		case 4:
-        		((Toggle) ventana.getController("MoverEstado")).setState(false);       			
-        		((Toggle) ventana.getController("AddEstado")).setState(false);   	
-        		println("Estado 4");    			
-    			break;
-        	default:
-        		println("Estado default");
-    	}    	
     }
     
     /********** EVENTOS DE LOS BOTONES **********/
     public void AddEstado() {
     	if(((Toggle)ventana.getController("AddEstado")).isMousePressed()) {
         	if(((Toggle)ventana.getController("AddEstado")).getState() == true) {
-            	actualizarEstadoDelPrograma(1);
+            	controladorPrograma.actualizarEstadoDelPrograma(1);
         	}
         	else {
-        		actualizarEstadoDelPrograma(0);
+        		controladorPrograma.actualizarEstadoDelPrograma(0);
         	}    		
     	}
     }
@@ -165,10 +123,10 @@ public class Main extends PApplet {
     public void MoverEstado() {
     	if(((Toggle)ventana.getController("MoverEstado")).isMousePressed()) {
         	if(((Toggle)ventana.getController("MoverEstado")).getState() == true) {
-        		actualizarEstadoDelPrograma(2);
+        		controladorPrograma.actualizarEstadoDelPrograma(2);
         	}   
         	else {
-        		actualizarEstadoDelPrograma(0);
+        		controladorPrograma.actualizarEstadoDelPrograma(0);
         	}    		
     	}
     }
@@ -176,10 +134,10 @@ public class Main extends PApplet {
     public void AgregarConexion() {
     	if(((Toggle)ventana.getController("AgregarConexion")).isMousePressed() && automata1.listaEstados.size() >= 2) {
         	if(((Toggle)ventana.getController("AgregarConexion")).getState() == true) {
-        		actualizarEstadoDelPrograma(4);
+        		controladorPrograma.actualizarEstadoDelPrograma(4);
         	}   
         	else {
-        		actualizarEstadoDelPrograma(0);
+        		controladorPrograma.actualizarEstadoDelPrograma(0);
         	}    		
     	}
     }
